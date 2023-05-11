@@ -6,31 +6,28 @@ class Author(models.Model):
     rating = models.IntegerField()
 
     def update_rating(self):
-        # Рассчитываем суммарный рейтинг каждой статьи автора, умножаем на 3
+# Рассчитываем суммарный рейтинг каждой статьи автора, умножаем на 3
         post_rating = self.post_set.aggregate(models.Sum('rating'))['rating__sum'] * 3 or 0
-
-        # Рассчитываем суммарный рейтинг всех комментариев автора
+# Рассчитываем суммарный рейтинг всех комментариев автора
         comment_rating = self.user.comment_set.aggregate(models.Sum('rating'))['rating__sum'] or 0
-
-        # Рассчитываем суммарный рейтинг всех комментариев к статьям автора
+# Рассчитываем суммарный рейтинг всех комментариев к статьям автора
         comment_rating_to_posts = self.post_set.aggregate(models.Sum('comment__rating'))['comment__rating__sum'] or 0
-
-        # Обновляем рейтинг автора
+# Обновляем рейтинг автора
         self.rating = post_rating + comment_rating + comment_rating_to_posts
         self.save()
 
 class Category(models.Model):
-    name = models.CharField(max_length=255, unique=True)
+    name = models.CharField(max_length=255, unique=True) # Уникальное имя котегории
 
 class Post(models.Model):
-    author = models.ForeignKey(Author, on_delete=models.CASCADE)
-    CHOICES = [('article', 'Статья'), ('news', 'Новость')]
-    type = models.CharField(max_length=10, choices=CHOICES)
-    created_at = models.DateTimeField(auto_now_add=True)
-    categories = models.ManyToManyField(Category, through='PostCategory')
-    title = models.CharField(max_length=255)
-    content = models.TextField()
-    rating = models.IntegerField()
+    author = models.ForeignKey(Author, on_delete=models.CASCADE) # Внешний ключь ОкМ
+    CHOICES = [('article', 'Статья'), ('news', 'Новость')] # Список Кортэджей
+    type = models.CharField(max_length=10, choices=CHOICES) # Тип Пост или Статья
+    created_at = models.DateTimeField(auto_now_add=True) # Дата создания Поста\Статьи
+    categories = models.ManyToManyField(Category, through='PostCategory') # МкМ
+    title = models.CharField(max_length=255) # Заголовок статьи/новости
+    content = models.TextField() # текст статьи/новости
+    rating = models.IntegerField() # рэйтинг статьи\новости
 
     def preview(self):
         preview_length = 124
