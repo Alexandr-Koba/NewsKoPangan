@@ -1,0 +1,24 @@
+from django.contrib.auth.models import User
+from myapp.models import Author, Category, Post
+
+# Создание пользователей
+user1 = User.objects.create_user('username1')
+user2 = User.objects.create_user('username2')
+
+# Создание объектов Author, связанных с пользователями
+author1 = Author.objects.create(user=user1, rating=0)
+author2 = Author.objects.create(user=user2, rating=0)
+
+# Создание объектов Category
+category1 = Category.objects.create(name='Category 1')
+category2 = Category.objects.create(name='Category 2')
+category3 = Category.objects.create(name='Category 3')
+category4 = Category.objects.create(name='Category 4')
+
+# Создание объектов Post
+post1 = Post.objects.create(author=author1, type='article', title='Статья 1', content='Содержимое статьи 1', rating=0)
+post2 = Post.objects.create(author=author2, type='news', title='Новость 1', content='Содержимое новости 1', rating=0)
+
+# Добавление категорий к постам
+post1.categories.add(category1, category2)
+post2.categories.add(category2, category3, category4)
